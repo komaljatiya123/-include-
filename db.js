@@ -1,21 +1,17 @@
-
+require('dotenv').config();
 const mongoose = require('mongoose');
-const { eventSchema, userSchema, registrationSchema } = require('./schema');
 
-mongoose.connect('mongodb://localhost:27017/include_events', { useNewUrlParser: true, useUnifiedTopology: true });
+const connectDB = async () => {
+  try {
+    const conn = await mongoose.connect(process.env.MONGODB_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true
+    });
+    console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
+  } catch (error) {
+    console.error(`❌ MongoDB Connection Error: ${error.message}`);
+    process.exit(1);
+  }
+};
 
-const db = mongoose.connection;
-
-db.on('error', (err) => {
-  console.error(err);
-});
-
-db.once('open', () => {
-  console.log('Connected to MongoDB');
-});
-
-const Event = mongoose.model('Event', eventSchema);
-const User = mongoose.model('User', userSchema);
-const Registration = mongoose.model('Registration', registrationSchema);
-
-module.exports = { Event, User, Registration };
+module.exports = connectDB;
